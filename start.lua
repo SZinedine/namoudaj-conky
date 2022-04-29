@@ -2,12 +2,10 @@
 -- Author:      Zineddine SAIBI
 -- Software:    Namoudaj Conky
 -- Type:        Template for Conky
--- Version:     0.1 (07 Sep 2021)
+-- Version:     0.4
 -- License:     GPL-3.0
 -- Repository:  https://www.github.com/SZinedine/namoudaj-conky
 ----------------------------------
-
-require 'abstract'
 
 -- This is a Demo
 -- replace the content of the following function to create your own conky theme
@@ -21,14 +19,14 @@ function start()
 
     if has_battery then
         rectangle_leftright(160, 400, 800, thickness, battery_percent(), 100, color_frompercent_reverse(tonumber(battery_percent())))   -- battery rectangle / line
-        write(535, 400+20, "Battery", 14, main_text_color)
+        write(535, 420, "Battery", 14, main_text_color)
         write(125, 407, battery_percent() .. "%", 14, main_text_color)
     end
 
     -- titles
-    write(267, 200+rings_radius+20, "CPU", 14, main_text_color)
-    write(515, 200+rings_radius+20, "Temperature", 14, main_text_color)
-    write(813, 200+rings_radius+20, "Memory", 14, main_text_color)
+    write(267, 370, "CPU", 14, main_text_color)
+    write(515, 370, "Temperature", 14, main_text_color)
+    write(813, 370, "Memory", 14, main_text_color)
 
     -- text values
     write(267, 210, cpu_percent() .. "%", 14, main_text_color)
@@ -52,7 +50,8 @@ function conky_main()
                                          conky_window.height)
     cr = cairo_create(cs)
 
-    if tonumber(updates()) > time_before_start then
+    if initialized_battery == false then init_battery() end
+    if tonumber(updates()) > startup_delay then
         start()
     end
 
@@ -60,3 +59,4 @@ function conky_main()
     cairo_surface_destroy(cs)
     cr = nil
 end
+
