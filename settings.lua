@@ -2,13 +2,20 @@ require("colors")
 
 --[[
 possible values of THEME
-    monochrome dark   monochrome light
     blue dark         blue light
     green dark        green light
+    emerald dark      emerald light
     yellow  dark      yellow light
     purple dark       purple light
+    violet dark       violet light
+    crimson dark      crimson light
+    maroon dark       maroon light
+    pink dark         pink light
     cyan  dark        cyan light
+    aquamarine dark   aquamarine light
+    monochrome dark   monochrome light
     gruvbox  dark     gruvbox light
+    contrast dark     contrast light
 ]]
 THEME = "blue dark"     -- choose one of the above
 
