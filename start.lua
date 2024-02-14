@@ -31,7 +31,7 @@ function start()
     write(813, 370, "Memory", 14, colors.text)
 
     -- text values
-    write(267, 210, cpu_percent() .. "%", 14, colors.text)
+    write(267, 210, cpu_percent(0) .. "%", 14, colors.text)
     write(545, 210, cpu_temperature() .. "°C", 14, colors.text)
     write(823, 210, memory_percent() .. "%", 14, colors.text)
 

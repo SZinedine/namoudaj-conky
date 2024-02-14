@@ -3,6 +3,14 @@ local light_text_color = 0x1D1D1D
 
 local dark_or_light = "dark" -- dark / light
 
+---@param bg number
+---@param fg number
+---@param text number
+---@param warn number | nil
+---@param critic number | nil
+---@param bg_alpha number | nil
+---@param fg_alpha number | nil
+---@return table
 function build_color(bg, fg, text, warn, critic, bg_alpha, fg_alpha)
     return {
         bg       = bg,
@@ -108,6 +116,8 @@ function choose_random_theme()
 end
 
 
+---@param theme string
+---@return table<string>
 function get_color_table(theme)
     if type(theme) ~= "string" then
         io.stderr:write("No theme provided. Defaulting to blue dark")
