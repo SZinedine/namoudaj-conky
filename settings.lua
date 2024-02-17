@@ -3,6 +3,7 @@ require("colors")
 --[[
 possible values of THEME
     blue dark         blue light
+    deepblue dark     deepblue light
     green dark        green light
     emerald dark      emerald light
     yellow  dark      yellow light
@@ -49,16 +50,13 @@ download_rate_maximum = 1000     -- kb
 upload_rate_maximum   = 1000     -- kb
 
 --[[
-Default font used by the convinient functions like write() and write_bold()
-You can use _write() to choose another font
+This is the default font used in write() if no other is provided
 ]]
 main_font = "Mono"
 
 --[[
 the public ip is fetched from the internet.
 There is no need to refresh it every second like the other values
-advice: use the variable public_ip instead of the function public_ip()
-which is called every `public_ip_refresh_rate` secondes
 
 WARNING: this feature exploits third party services,
 therefore we cannot garantee your privacy if you turn it on

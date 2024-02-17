@@ -2,7 +2,7 @@
 -- Author:      Zineddine SAIBI
 -- Software:    Namoudaj Conky
 -- Type:        Template for Conky
--- Version:     0.4
+-- Version:     0.5
 -- License:     GPL-3.0
 -- Repository:  https://www.github.com/SZinedine/namoudaj-conky
 ----------------------------------

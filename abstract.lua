@@ -2,7 +2,7 @@
 -- Author:      Zineddine SAIBI
 -- Software:    Namoudaj Conky
 -- Type:        Template for Conky
--- Version:     0.4
+-- Version:     0.5
 -- License:     GPL-3.0
 -- Repository:  https://www.github.com/SZinedine/namoudaj-conky
 ----------------------------------
@@ -11,13 +11,25 @@ require("cairo")
 require("imlib2")
 require("settings")
 
+---@alias font_slant_t
+---| "CAIRO_FONT_SLANT_NORMAL"
+---| "CAIRO_FONT_SLANT_ITALIC"
+---| "CAIRO_FONT_SLANT_OBLIQUE"
+
+
+---@alias font_weight_t
+---| "CAIRO_FONT_WEIGHT_NORMAL"
+---| "CAIRO_FONT_WEIGHT_BOLD"
+
 
 ---place an image on the screen
 ---@param x number
 ---@param y number
 ---@param file string
 function image(x, y, file)
-    if file == nil then return end
+    if file == nil then
+        return
+    end
 
     local show = imlib_load_image(file)
     if show == nil then return end
@@ -40,12 +52,12 @@ end
 ---@param alpha  number
 --
 function line(startx, starty, endx, endy, thick, color, alpha)
-    cairo_set_line_width (cr, thick)
-    cairo_set_line_cap  (cr, CAIRO_LINE_CAP_BUTT)
-    cairo_set_source_rgba (cr, color_convert(color, alpha))
-    cairo_move_to (cr, startx, starty)
-    cairo_line_to (cr, endx, endy)
-    cairo_stroke (cr)
+    cairo_set_line_width(cr, thick)
+    cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT)
+    cairo_set_source_rgba(cr, color_convert(color, alpha))
+    cairo_move_to(cr, startx, starty)
+    cairo_line_to(cr, endx, endy)
+    cairo_stroke(cr)
 end
 
 
@@ -67,15 +79,15 @@ function ring_clockwise(x, y, radius, thickness, angle_begin, angle_end, value_s
     angle_end   = angle_end   * (2 * math.pi / 360) - (math.pi / 2)
     local progress = (value / max_value) * (angle_end - angle_begin)
 
-    cairo_set_line_width (cr, thickness)
-    cairo_set_source_rgba (cr, color_convert(colors.bg, colors.bg_alpha))
-    cairo_arc (cr, x, y, radius, angle_begin, angle_end)
-    cairo_stroke (cr)
+    cairo_set_line_width(cr, thickness)
+    cairo_set_source_rgba(cr, color_convert(colors.bg, colors.bg_alpha))
+    cairo_arc(cr, x, y, radius, angle_begin, angle_end)
+    cairo_stroke(cr)
 
-    cairo_set_line_width (cr, thickness)
-    cairo_set_source_rgba (cr, color_convert(fg_color, colors.fg_alpha))
+    cairo_set_line_width(cr, thickness)
+    cairo_set_source_rgba(cr, color_convert(fg_color, colors.fg_alpha))
     cairo_arc(cr, x, y, radius, angle_begin, angle_begin + progress)
-    cairo_stroke (cr)
+    cairo_stroke(cr)
 end
 
 
@@ -97,15 +109,15 @@ function ring_anticlockwise(x, y, radius, thickness, angle_begin, angle_end, val
     angle_end   = angle_end   * (2 * math.pi / 360) - (math.pi / 2)
     local progress = (value / max_value) * (angle_end - angle_begin)
 
-    cairo_set_line_width (cr, thickness)
-    cairo_set_source_rgba (cr, color_convert(colors.bg, colors.bg_alpha))
-    cairo_arc_negative (cr, x, y, radius, angle_begin, angle_end)
-    cairo_stroke (cr)
+    cairo_set_line_width(cr, thickness)
+    cairo_set_source_rgba(cr, color_convert(colors.bg, colors.bg_alpha))
+    cairo_arc_negative(cr, x, y, radius, angle_begin, angle_end)
+    cairo_stroke(cr)
 
-    cairo_set_line_width (cr, thickness)
-    cairo_set_source_rgba (cr, color_convert(fg_color, colors.fg_alpha))
-    cairo_arc_negative (cr, x, y, radius, angle_begin, angle_begin + progress)
-    cairo_stroke (cr)
+    cairo_set_line_width(cr, thickness)
+    cairo_set_source_rgba(cr, color_convert(fg_color, colors.fg_alpha))
+    cairo_arc_negative(cr, x, y, radius, angle_begin, angle_begin + progress)
+    cairo_stroke(cr)
 end
 
 
@@ -187,33 +199,33 @@ end
 ---@param   text        string
 ---@param   font_size   number
 ---@param   color       string
-function write(x, y, text, font_size, color)
-    _write_(x, y, text, main_font, font_size, color, 1, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL)
+---@param   font_name   string?          -- defaults to main_font defined in settings.lua
+---@param   font_slant  font_slant_t?    -- defaults to normal
+---@param   font_face   font_weight_t?   -- default to normal
+---@param   alpha       number?          -- defaults to 1
+function write(x, y, text, font_size, color, font_name, font_slant, font_face, alpha)
+    font_name  = font_name or main_font
+    alpha      = alpha or 1
+    font_slant = font_slant or CAIRO_FONT_SLANT_NORMAL
+    font_face  = font_face or CAIRO_FONT_WEIGHT_NORMAL
+
+    cairo_select_font_face(cr, font_name, font_slant, font_face);
+    cairo_set_font_size(cr, font_size)
+    cairo_set_source_rgba(cr, color_convert(color, alpha))
+    cairo_move_to(cr, x, y)
+    cairo_show_text(cr, text)
+    cairo_stroke(cr)
 end
 
 
+---convenience function to write text in bold
+---@param   x           number
+---@param   y           number
+---@param   text        string
+---@param   font_size   number
+---@param   color       string
 function write_bold(x, y, text, font_size, color)
-    -- convinience function to write in bold font
-    _write_(x, y, text, main_font, font_size, color, 1, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD)
-end
-
-
----@param   x            number
----@param   y            number
----@param   text         string
----@param   font_name    string
----@param   font_size    number
----@param   color        string
----@param   alpha        number
----@param   font_slant   any
----@param   font_face    any
-function _write_(x, y, text, font_name, font_size, color, alpha, font_slant, font_face)
-    cairo_select_font_face (cr, font_name, font_slant, font_face);
-    cairo_set_font_size (cr, font_size)
-    cairo_set_source_rgba (cr, color_convert(color, alpha))
-    cairo_move_to (cr, x, y)
-    cairo_show_text (cr, text)
-    cairo_stroke (cr)
+    write(x, y, text, font_size, color, nil, nil, CAIRO_FONT_WEIGHT_BOLD)
 end
 
 
@@ -278,7 +290,7 @@ end
 ---@param   content     table<string>
 ---@param   color       string
 ---@param   font_size   number
----@param   bold        boolean
+---@param   bold        boolean?
 function write_line_by_line(x, y, interval, content, color, font_size, bold)
     if bold == nil then bold = false end
     local yy = y
@@ -420,8 +432,8 @@ end
 ---@return string | nil
 function cpu_percent(n)
     if n == nil or n == 0 or n == "" then return parse("cpu") end
-    if n > 0 and n <= 32  then return parse("cpu cpu" .. n)
-    else                       return nil end
+    if n > 0 and n <= 32             then return parse("cpu cpu" .. n)
+    else                                  return nil end
 end
 
 
@@ -471,20 +483,12 @@ end
 
 
 ---@type string | nil holds the IP adress value.
-public_ip = nil
+local public_ip = nil
 
 
 ---@return string|nil
 function get_public_ip()
     return public_ip
-end
-
-
----@param ip string | nil
-function set_public_ip(ip) 
-    if not ip then public_ip = "No Address"
-    else public_ip = tostring(ip)
-    end
 end
 
 
@@ -500,18 +504,18 @@ function update_public_ip()
     -- fetch IP from the internet. other websites: "ifconfig.me/ip", "ident.me", "api.ipify.org"
     local file = io.popen("curl -s http://ipinfo.io/ip") 
     if not file then
-        set_public_ip(nil)
+        public_ip = "No Address"
         return nil
     end
 
     local output = file:read("*a")
     file:close()
     if output == nil or output == "" or string.len(output) > 15  then
-        set_public_ip(nil)
+        public_ip = "No Address"
         return nil
     end
 
-    set_public_ip(output)
+    public_ip = tostring(output)
     return output
 end
 
@@ -520,6 +524,7 @@ end
     The following will define multiple variables and functions according to the machine where it is ran
     the default value is a nil, so it is necessary to check in case you want to use the second battery.
 ]]
+
 has_battery         = nil    ---@type boolean  | nil
 has_second_battery  = nil    ---@type boolean  | nil
 battery1_percent    = nil    ---@type function | nil for the first battery. nil if it doesn't exist
@@ -544,7 +549,7 @@ function init_battery()
         initialized_battery = true
     end
 
-    local bat_indexes = {}
+    local bat_indexes = {}  ---@type table<number>
     local size = 0          -- how many batteries found
 
     -- determine how many batteries by calling them (even if it will print out error messages)
@@ -571,7 +576,7 @@ function init_battery()
     elseif size >= 1 then
         has_battery = true
         battery1_index = bat_indexes[1]
-        battery1_percent = function () return parse("battery_percent BAT" .. bat_indexes[1]) end
+        battery1_percent = function() return parse("battery_percent BAT" .. bat_indexes[1]) end
 
         if size == 1 then
             battery_percent = function()
